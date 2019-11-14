@@ -11,8 +11,12 @@ from collections import OrderedDict, defaultdict
 from datetime import timedelta
 
 import numpy as np
-import pandas as pd
+import modin.pandas as pd
+import pandas as pandas_legacy
 import pystan  # noqa F401
+
+pd.to_datetime_legacy = pd.to_datetime
+pd.to_datetime = lambda df : pd.to_datetime_legacy([x for x in list(df)])
 
 from fbprophet.diagnostics import prophet_copy
 from fbprophet.make_holidays import get_holiday_names, make_holidays_df
@@ -237,7 +241,7 @@ class Prophet(object):
                 raise ValueError('Found infinity in column y.')
         if df['ds'].dtype == np.int64:
             df['ds'] = df['ds'].astype(str)
-        df['ds'] = pd.to_datetime(df['ds'])
+        df['ds'] = pd.to_datetime([x for x in list(df.ds)])
         if df['ds'].dt.tz is not None:
             raise ValueError(
                 'Column ds has timezone specified, which is not supported. '
@@ -737,7 +741,7 @@ class Prophet(object):
                 name,
             )
             if props['condition_name'] is not None:
-                features[~df[props['condition_name']]] = 0
+                features.loc[(features[~(df[props['condition_name']])])] = 0
             seasonal_features.append(features)
             prior_scales.extend(
                 [props['prior_scale']] * features.shape[1])
@@ -1055,7 +1059,7 @@ class Prophet(object):
         history = df[df['y'].notnull()].copy()
         if history.shape[0] < 2:
             raise ValueError('Dataframe has less than 2 non-NaN rows.')
-        self.history_dates = pd.to_datetime(df['ds']).sort_values()
+        self.history_dates = pd.to_datetime([x for x in list(df.ds)]).sort_values()
 
         history = self.setup_dataframe(history, initialize_scales=True)
         self.history = history

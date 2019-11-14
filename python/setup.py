@@ -102,10 +102,10 @@ with open('requirements.txt', 'r') as f:
 
 setup(
     name='fbprophet',
-    version='0.5',
-    description='Automatic Forecasting Procedure',
+    version='0.5m',
+    description='Automatic Forecasting Procedure (Modin Edition)',
     url='https://facebook.github.io/prophet/',
-    author='Sean J. Taylor <sjtz@pm.me>, Ben Letham <bletham@fb.com>',
+    author='Sean J. Taylor <sjtz@pm.me>, Ben Letham <bletham@fb.com>, Otavio Cals <otaviolcals@gmail.com>',
     author_email='sjtz@pm.me',
     license='MIT',
     packages=find_packages(),
